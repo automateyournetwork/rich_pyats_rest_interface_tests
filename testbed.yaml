@@ -1,0 +1,48 @@
+---
+
+devices:                       
+    dist-rtr01:
+        alias: 'dist router01'
+        type: 'router'
+        os: 'iosxe'
+        platform: csr1000v
+        connections:
+            rest:
+                # Rest connector class
+                class: rest.connector.Rest
+                ip: 10.10.20.175
+                port: 443
+                credentials:
+                    rest:
+                        username: cisco
+                        password: cisco
+    dist-rtr02:
+        alias: 'dist router02'
+        type: 'router'
+        os: 'iosxe'
+        platform: csr1000v
+        connections:
+            rest:
+                # Rest connector class
+                class: rest.connector.Rest
+                ip: 10.10.20.176
+                port: 443
+                credentials:
+                    rest:
+                        username: cisco
+                        password: cisco
+    csr1000v-1:
+        alias: 'sandbox'
+        type: 'router'
+        os: 'iosxe'
+        platform: csr1000v
+        connections:
+            rest:
+                # Rest connector class
+                class: rest.connector.Rest
+                ip: sandbox-iosxe-latest-1.cisco.com
+                port: 443
+                credentials:
+                    rest:
+                        username: developer
+                        password: C1sco12345                        
