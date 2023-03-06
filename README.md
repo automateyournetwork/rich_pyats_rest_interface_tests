@@ -39,6 +39,9 @@ $ source /REST_Connector/bin/activate
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install pyats[full]
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install rich
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install rest.connector
+(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install requests
+(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install python-dotenv
+(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install cairosvg
 ```
 
 ## Run the code - using RESTCONF
@@ -53,5 +56,10 @@ $ source /REST_Connector/bin/activate
 (REST_Connector) ~/ pyats logs view
 ```
 
-## Remove the CML 
-If you want to run this against just the always on sandbox you can just remove / comment out dist-rtr01 / dist-rtr02 from the testbed file and then run the job.
+### SVG Output
+If you are using VS Code you can install the SVG Preview Extension and view the per-test SVG Rich Table output of the results of each test in the IDE or you can view these files in a web browser to view the output without using the pyATS Logs Viewer
+## WebEx
+You can create a local.env file with a WebEx Room ID and WebEx Token and have the test results sent to that room
+
+WEBEX_TOKEN=""
+WEBEX_ROOMID=""
