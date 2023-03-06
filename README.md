@@ -1,12 +1,9 @@
 # rich_pyats_rest_interface_tests
-Various pyATS Interface Tests against IOS-XE YANG RESTCONF APIs using Rich Tables for reporting
-
-# rich_pyats_rest_interface_tests
 Examples of pyATS REST Connector with IOS-XE / NXOS YANG Model Interface level testing
 
 ## Ready to go with the Cisco CML
 
-[CML Sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/d6023d5d-e04f-4138-9f51-ff1dee9b0ad4)
+[CML Sandbox]([https://devnetsandbox.cisco.com/RM/Diagram/Index/d6023d5d-e04f-4138-9f51-ff1dee9b0ad4](https://devnetsandbox.cisco.com/RM/Diagram/Index/45100600-b413-4471-b28e-b014eb824555?diagramType=Topology))
 
 [Always On IOS-XE Sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/7b4d4209-a17c-4bc3-9b38-f15184e53a94?diagramType=Topology)
 
