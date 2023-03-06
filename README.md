@@ -50,5 +50,5 @@ $ source /REST_Connector/bin/activate
 ### View the logs
 
 ```console
-(REST_Connector) ~/
+(REST_Connector) ~/ pyats logs view
 ```
