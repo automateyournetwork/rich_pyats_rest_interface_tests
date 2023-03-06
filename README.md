@@ -52,3 +52,6 @@ $ source /REST_Connector/bin/activate
 ```console
 (REST_Connector) ~/ pyats logs view
 ```
+
+## Remove the CML 
+If you want to run this against just the always on sandbox you can just remove / comment out dist-rtr01 / dist-rtr02 from the testbed file and then run the job.
