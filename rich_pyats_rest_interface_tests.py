@@ -1,6 +1,5 @@
 import json
 import logging
-import re
 from pyats import aetest
 from pyats.log.utils import banner
 from rich.console import Console
@@ -81,7 +80,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input CRC errors')
@@ -113,7 +115,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+        
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input fragment frames')
@@ -145,7 +150,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input jabber frames')
@@ -177,7 +185,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input MAC Pause frames')
@@ -209,7 +220,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input oversize frames')
@@ -241,7 +255,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have output MAC pause frames')
@@ -272,7 +289,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input discards')
@@ -303,7 +323,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input errors')
@@ -334,7 +357,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input fcs errors')
@@ -365,7 +391,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have input unknown protocols')
@@ -396,7 +425,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have output discards')
@@ -427,7 +459,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces have output errors')
@@ -458,7 +493,10 @@ class Test_Interfaces(aetest.Testcase):
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="on yellow")           
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces are not full duplex')
@@ -488,7 +526,10 @@ class Test_Interfaces(aetest.Testcase):
                     table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Passed',style="on green")
         # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
         # should we pass or fail?
         if self.failed_interfaces:
             self.failed('Some interfaces are admin / oper state mismatch')
@@ -507,13 +548,17 @@ class Test_Interfaces(aetest.Testcase):
         for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             if 'description' in self.intf['config']:
                 actual_desc = self.intf['config']['description']
-                table.add_row(self.device.alias,self.intf['name'],actual_desc,'Passed',style="on green")
-            else:
-                table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="on red")
-                self.failed_interfaces = "failed"
+                if actual_desc:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Passed',style="on green")
+                else:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="on red")
+                    self.failed_interfaces = "failed"
     #     # display the table
         console = Console()
-        log.info(console.print(table))
+        with console.capture() as capture:
+            console.print(table)
+        log.info(capture.get())
+
     # should we pass or fail?
         if self.failed_interfaces:
            self.failed('Some interfaces have no description')            
