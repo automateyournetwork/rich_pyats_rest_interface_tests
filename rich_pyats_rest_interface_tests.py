@@ -39,17 +39,18 @@ class common_setup(aetest.CommonSetup):
 # ----------------
     @aetest.subsection
     def loop_mark(self, testbed):
-        aetest.loop.mark(Test_Interfaces, device_name=testbed.devices)
+        aetest.loop.mark(Test_OpenConfig_Interface, device_name=testbed.devices)
+        aetest.loop.mark(Test_Cisco_IOS_XE_Interface_Oper, device_name=testbed.devices)
 
 # ----------------
 # Test Case #1
 # ----------------
-class Test_Interfaces(aetest.Testcase):
+class Test_OpenConfig_Interface(aetest.Testcase):
     """Parse the OpenConfig YANG Model - interfaces:interfaces"""
 
     @aetest.test
     def setup(self, testbed, device_name):
-        """ Testcase Setup secti"""
+        """ Testcase Setup section"""
         # Loop over devices in tested for testing
         self.device = testbed.devices[device_name]
     
@@ -97,17 +98,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
         
         # Save table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input CRC Errors.svg", title = f"{ self.device.alias } Input CRC Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input CRC Errors.svg", title = f"{ self.device.alias } Open Config Interface Input CRC Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input CRC Errors.svg", write_to=f"Test Results/{ self.device.alias } Input CRC Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input CRC Errors.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input CRC Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The Device { self.device.alias } Has Interface Input CRC Errors',
-                          'files': (f"Test Results/{ self.device.alias } Input CRC Errors.png", open(f"Test Results/{ self.device.alias } Input CRC Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input CRC Errors.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input CRC Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -150,17 +151,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Fragment Frames.svg", title = f"{ self.device.alias } Input Fragment Frames")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Fragment Frames.svg", title = f"{ self.device.alias } Open Config Interface Input Fragment Frames")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Fragment Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Fragment Frames.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Fragment Frames.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Fragment Frames.png")
        
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The Device { self.device.alias } Has Interface Input Fragment Frames',
-                          'files': (f"Test Results/{ self.device.alias } Input Fragment Frames.png", open(f"Test Results/{ self.device.alias } Input Fragment Frames.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input Fragment Frames.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input Fragment Frames.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -203,17 +204,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Jabber Frames.svg", title = f"{ self.device.alias } Input Jabber Frames")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Jabber Frames.svg", title = f"{ self.device.alias } Open Config Interface Input Jabber Frames")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Jabber Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Jabber Frames.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Jabber Frames.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Jabber Frames.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } Has Interface Input Jabber Frames',
-                          'files': (f"Test Results/{ self.device.alias } Input Jabber Frames.png", open(f"Test Results/{ self.device.alias } Input Jabber Frames.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input Jabber Frames.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input Jabber Frames.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -256,17 +257,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input MAC Pause Frames.svg", title = f"{ self.device.alias } Input MAC PAuse Frames")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input MAC Pause Frames.svg", title = f"{ self.device.alias } Open Config Interface Input MAC PAuse Frames")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Input MAC Pause Frames.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input MAC Pause Frames.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } Has Interface Input MAC Pause Frames',
-                          'files': (f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input MAC Pause Frames.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -309,17 +310,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Oversize Frames.svg", title = f"{ self.device.alias } Input Oversize Frames")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Oversize Frames.svg", title = f"{ self.device.alias } Open Config Interface Input Oversize Frames")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Oversize Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Oversize Frames.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Oversize Frames.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Oversize Frames.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Oversize Frames',
-                          'files': (f"Test Results/{ self.device.alias } Input Oversize Frames.png", open(f"Test Results/{ self.device.alias } Input Oversize Frames.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input Oversize Frames.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input Oversize Frames.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -362,17 +363,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Output MAC Pause Frames.svg", title = f"{ self.device.alias } Output MAC Pause Frames")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Output MAC Pause Frames.svg", title = f"{ self.device.alias } Open Config Interface Output MAC Pause Frames")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Output MAC Pause Frames.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Output MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Output MAC Pause Frames.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Output MAC Pause Frames',
-                          'files': (f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Output MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Open Config Interface Output MAC Pause Frames.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -414,17 +415,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Discards.svg", title = f"{ self.device.alias } Input Discards")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Discards.svg", title = f"{ self.device.alias } Open Config Interface Input Discards")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Discards.svg", write_to=f"Test Results/{ self.device.alias } Input Discards.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Discards.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Discards.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Discards',
-                          'files': (f"Test Results/{ self.device.alias } Input Discards.png", open(f"Test Results/{ self.device.alias } Input Discards.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input Discards.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input Discards.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -466,17 +467,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Errors.svg", title = f"{ self.device.alias } Input Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Errors.svg", title = f"{ self.device.alias } Open Config Interface Input Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Errors.svg", write_to=f"Test Results/{ self.device.alias } Input Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Errors.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Errors',
-                          'files': (f"Test Results/{ self.device.alias } Input Errors.png", open(f"Test Results/{ self.device.alias } Input Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input Errors.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -518,17 +519,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input FCS Errors.svg", title = f"{ self.device.alias } Input FCS Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input FCS Errors.svg", title = f"{ self.device.alias } Open Config Interface Input FCS Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input FCS Errors.svg", write_to=f"Test Results/{ self.device.alias } Input FCS Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input FCS Errors.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input FCS Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input FCS Errors',
-                          'files': (f"Test Results/{ self.device.alias } Input FCS Errors.png", open(f"Test Results/{ self.device.alias } Input FCS Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Input FCS Errors.png", open(f"Test Results/{ self.device.alias } Open Config Interface Input FCS Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -570,10 +571,10 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Input Unknown Protocols.svg", title = f"{ self.device.alias } Input Unknown Protocols")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Input Unknown Protocols.svg", title = f"{ self.device.alias } Open Config Interface Input Unknown Protocols")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } Input Unknown Protocols.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Input Unknown Protocols.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
@@ -622,17 +623,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Output Discards.svg", title = f"{ self.device.alias } Output Discards")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Output Discards.svg", title = f"{ self.device.alias } Open Config Interface Output Discards")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output Discards.svg", write_to=f"Test Results/{ self.device.alias } Output Discards.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Output Discards.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Output Discards.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Output Discards',
-                          'files': (f"Test Results/{ self.device.alias } Output Discards.png", open(f"Test Results/{ self.device.alias } Output Discards.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Output Discards.png", open(f"Test Results/{ self.device.alias } Open Config Interface Output Discards.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -674,17 +675,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Output Errors.svg", title = f"{ self.device.alias } Output Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interface Output Errors.svg", title = f"{ self.device.alias } Open Config Interface Output Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output Errors.svg", write_to=f"Test Results/{ self.device.alias } Output Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interface Output Errors.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interface Output Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Output Errors',
-                          'files': (f"Test Results/{ self.device.alias } Output Errors.png", open(f"Test Results/{ self.device.alias } Output Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interface Output Errors.png", open(f"Test Results/{ self.device.alias } Open Config Interface Output Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -725,17 +726,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.svg", title = f"{ self.device.alias } Interfaces Are Full Duplex")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interfaces Are Full Duplex.svg", title = f"{ self.device.alias } Open Config Interfaces Are Full Duplex")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interfaces Are Full Duplex.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interfaces Are Full Duplex.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interfaces that are not Full Duplex',
-                          'files': (f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", open(f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interfaces Are Full Duplex.png", open(f"Test Results/{ self.device.alias } Open Config Interfaces Are Full Duplex.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -775,17 +776,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.svg", title = f"{ self.device.alias } Interfaces Admin Status Matches Oper Status")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status.svg", title = f"{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interfaces with Admin and Oper Status mismatches',
-                          'files': (f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", open(f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status.png", open(f"Test Results/{ self.device.alias } Open Config Interfaces Admin Status Matches Oper Status.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -814,6 +815,9 @@ class Test_Interfaces(aetest.Testcase):
                 else:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
                     self.failed_interfaces = "failed"
+            else:
+                table.add_row(self.device.alias,self.intf['name'],"N/A",'Failed',style="red")
+                self.failed_interfaces = "failed"                                    
     #     # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -821,17 +825,17 @@ class Test_Interfaces(aetest.Testcase):
         log.info(capture.get())
 
         # Save Table as SVG
-        console.save_svg(f"Test Results/{ self.device.alias } Interfaces Have Descriptions.svg", title = f"{ self.device.alias } Interfaces Have Descriptions")
+        console.save_svg(f"Test Results/{ self.device.alias } Open Config Interfaces Have Descriptions.svg", title = f"{ self.device.alias } Open Config Interfaces Have Descriptions")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Have Descriptions.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Open Config Interfaces Have Descriptions.svg", write_to=f"Test Results/{ self.device.alias } Open Config Interfaces Have Descriptions.png")
 
     # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } Has Interfaces without Descriptions',
-                          'files': (f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } Open Config Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } Open Config Interfaces Have Descriptions.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -842,6 +846,177 @@ class Test_Interfaces(aetest.Testcase):
             self.failed('Some interfaces have no description')            
         else:
             self.passed('All interfaces have descriptions')
+
+class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
+    """Parse the Cisco IOS XE Interface Oper YANG Model"""
+
+    @aetest.test
+    def setup(self, testbed, device_name):
+        """ Testcase Setup section"""
+        # Loop over devices in tested for testing
+        self.device = testbed.devices[device_name]
+    
+    @aetest.test
+    def get_test_yang_data(self):
+        # Use the RESTCONF Cisco IOS-XE YANG Model 
+        parsed_cisco_ios_xe_interfaces_oper = self.device.rest.get("/restconf/data/Cisco-IOS-XE-interfaces-oper:interfaces")
+        # Get the JSpayload
+        self.parsed_json=parsed_cisco_ios_xe_interfaces_oper.json()
+
+    @aetest.test
+    def create_pre_test_files(self):
+        # Create .JSfile
+        with open(f'JSON/{self.device.alias}_Cisco_IOS_XE_Interfaces_Oper.json', 'w') as f:
+            f.write(json.dumps(self.parsed_json, indent=4, sort_keys=True))
+
+    @aetest.test
+    def test_interface_description(self):
+    # Test for description
+        self.failed_interfaces = {}
+        table = Table(title="Cisco IOS-XE Interface Has Description")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Description", style="magenta")
+        table.add_column("Passed/Failed", style="green")        
+        for self.intf in self.parsed_json['Cisco-IOS-XE-interfaces-oper:interfaces']['interface']:
+            if 'description' in self.intf:
+                actual_desc = self.intf['description']
+                if actual_desc:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Passed',style="green")
+                else:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
+                    self.failed_interfaces = "failed"
+    #     # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Table as SVG
+        console.save_svg(f"Test Results/{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions.svg", title = f"{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions.svg", write_to=f"Test Results/{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions.png")
+
+    # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } Has Interfaces without Descriptions',
+                          'files': (f"Test Results/{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } Cisco IOS XE Interfaces Have Descriptions.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)           
+            self.failed('Some interfaces have no description')            
+        else:
+            self.passed('All interfaces have descriptions')
+
+    @aetest.test
+    def test_interface_input_crc_errors(self):
+        # Test for input discards
+        in_crc_errors_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="Cisco IOS-XE Interface Input CRC Errors")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Input CRC Threshold", style="magenta")
+        table.add_column("Input CRC Errors", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_json['Cisco-IOS-XE-interfaces-oper:interfaces']['interface']:
+            if 'in-crc-errors' in intf['statistics']:
+                counter = intf['statistics']['in-crc-errors']
+                if counter:
+                    if int(counter) > in_crc_errors_threshold:
+                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[intf['name']] = int(counter)
+                        self.interface_name = intf['name']
+                        self.error_counter = self.failed_interfaces[intf['name']]
+                    else:
+                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
+                else:
+                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+        
+        # Save table to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } Cisco IOS XE Interface Input CRC Errors.svg", title = f"{ self.device.alias } Cisco IOS XE Interface Input CRC Errors")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Cisco IOS XE Interface Input CRC Errors.svg", write_to=f"Test Results/{ self.device.alias } Cisco IOS XE Interface Input CRC Errors.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The Device { self.device.alias } Has Interface Input CRC Errors',
+                          'files': (f"Test Results/{ self.device.alias } Cisco IOS XE Interface Input CRC Errors.png", open(f"Test Results/{ self.device.alias } Cisco IOS XE Interface Input CRC Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+            self.failed('Some interfaces have input CRC errors')
+        else:
+            self.passed('No interfaces have input CRC errors')
+
+    @aetest.test
+    def test_interface_input_discards(self):
+        # Test for input discards
+        in_discards_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="Cisco IOS-XE Interface Input Discards")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Input Discards Threshold", style="magenta")
+        table.add_column("Input Discards", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_json['Cisco-IOS-XE-interfaces-oper:interfaces']['interface']:
+            if 'in-discards' in intf['statistics']:
+                counter = intf['statistics']['in-discards']
+                if counter > in_discards_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } Cisco IOS-XE Interface Input Discards.svg", title = f"{ self.device.alias } Cisco IOS-XE Interface Input Discards")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Cisco IOS-XE Interface Input Discards.svg", write_to=f"Test Results/{ self.device.alias } Cisco IOS-XE Interface Input Discards.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Discards',
+                          'files': (f"Test Results/{ self.device.alias } Cisco IOS-XE Interface Input Discards.png", open(f"Test Results/{ self.device.alias } Cisco IOS-XE Interface Input Discards.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have input discards')
+        else:
+            self.passed('No interfaces have input discards')
 
 class CommonCleanup(aetest.CommonCleanup):
     @aetest.subsection

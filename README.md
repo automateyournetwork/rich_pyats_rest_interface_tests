@@ -3,19 +3,8 @@ Examples of pyATS REST Connector with IOS-XE / NXOS YANG Model Interface level t
 
 ## Ready to go with the Cisco CML
 
-[CML Sandbox]([https://devnetsandbox.cisco.com/RM/Diagram/Index/d6023d5d-e04f-4138-9f51-ff1dee9b0ad4](https://devnetsandbox.cisco.com/RM/Diagram/Index/45100600-b413-4471-b28e-b014eb824555?diagramType=Topology))
-
 [Always On IOS-XE Sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/7b4d4209-a17c-4bc3-9b38-f15184e53a94?diagramType=Topology)
 
-### Enable RESTCONF on the 2 IOS-XE Devices
-Make sure to enable RESTCONF
-
-```console
-switch> enable
-switch# conf t
-switch(conf)# ip http secure-server
-switch(conf)# restconf
-```
 ## Installation
 
 ### Create a virtual environment
@@ -41,7 +30,7 @@ $ source /REST_Connector/bin/activate
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install cairosvg
 ```
 
-## Run the code - using RESTCONF
+## Run the code
 ```console
 (REST_Connector) ~/rich_pyats_rest_interface_tests$
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pyats run job rich_pyats_rest_interface_tests_job.py
@@ -60,3 +49,45 @@ You can create a local.env file with a WebEx Room ID and WebEx Token and have th
 
 WEBEX_TOKEN=""
 WEBEX_ROOMID=""
+
+## API Coverage / Tests
+
+### openconfig-interfaces:interfaces
+
+Interface Admin State Matches Oper State
+
+Interface Has A Description
+
+Interface is Full Duplex
+
+Input CRC Errors
+
+Input Discards
+
+Input Errors
+
+Input FCS Errors
+
+Input Fragment
+
+Input Jabber
+
+Input MAC Pause Frames
+
+Input Oversize Frames
+
+Input Unknown Protocols
+
+Output Discards
+
+Output Errors
+
+Output Pause Frames
+
+### Cisco-IOS-XE-interfaces-oper:interfaces
+
+Interface Has Description
+
+Input CRC Errors
+
+Input Discards
