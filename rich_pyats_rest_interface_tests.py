@@ -74,6 +74,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input CRC Errors")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input CRC Threshold", style="magenta")
         table.add_column("Input CRC Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -81,12 +82,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-crc-errors']
                 if counter:
                     if int(counter) > in_crc_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -101,20 +102,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input CRC Errors.svg", write_to=f"Test Results/{ self.device.alias } Input CRC Errors.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input CRC Error Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input CRC Errors.png", open(f"Test Results/{ self.device.alias } Input CRC Errors.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The Device { self.device.alias } Has Interface Input CRC Errors',
+                          'files': (f"Test Results/{ self.device.alias } Input CRC Errors.png", open(f"Test Results/{ self.device.alias } Input CRC Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
             self.failed('Some interfaces have input CRC errors')
         else:
             self.passed('No interfaces have input CRC errors')
@@ -127,6 +127,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input Fragment Frames")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Fragment Frames Threshold", style="magenta")
         table.add_column("Input Fragment Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -134,12 +135,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-fragment-frames']
                 if counter:
                     if int(counter) > in_fragment_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_fragment_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_fragment_errors_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -153,21 +154,20 @@ class Test_Interfaces(aetest.Testcase):
 
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Fragment Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Fragment Frames.png")
-
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Fragment Frames Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Fragment Frames.png", open(f"Test Results/{ self.device.alias } Input Fragment Frames.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-        
+       
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The Device { self.device.alias } Has Interface Input Fragment Frames',
+                          'files': (f"Test Results/{ self.device.alias } Input Fragment Frames.png", open(f"Test Results/{ self.device.alias } Input Fragment Frames.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input fragment frames')
         else:
             self.passed('No interfaces have input fragment frames')
@@ -180,6 +180,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input Jabber Frames")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Jabber Frames Threshold", style="magenta")
         table.add_column("Input Jabber Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -187,12 +188,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-jabber-frames']
                 if counter:
                     if int(counter) > in_jabber_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_jabber_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_jabber_errors_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -207,20 +208,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Jabber Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Jabber Frames.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Jabber Frames Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Jabber Frames.png", open(f"Test Results/{ self.device.alias } Input Jabber Frames.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } Has Interface Input Jabber Frames',
+                          'files': (f"Test Results/{ self.device.alias } Input Jabber Frames.png", open(f"Test Results/{ self.device.alias } Input Jabber Frames.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input jabber frames')
         else:
             self.passed('No interfaces have input jabber frames')
@@ -233,6 +233,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input MAC Pause Frames")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input MAC Pause Frames Threshold", style="magenta")
         table.add_column("Input MAC Pause Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -240,12 +241,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-mac-pause-frames']
                 if counter:
                     if int(counter) > in_mac_pause_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_mac_pause_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_mac_pause_errors_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -260,20 +261,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Input MAC Pause Frames.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input MAC Pause Frames Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } Has Interface Input MAC Pause Frames',
+                          'files': (f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Input MAC Pause Frames.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input MAC Pause frames')
         else:
             self.passed('No interfaces have input MAC Pause frames')
@@ -286,6 +286,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input Oversize Frames")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Oversize Frames Threshold", style="magenta")
         table.add_column("Input Oversize Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -293,12 +294,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-oversize-frames']
                 if counter:
                     if int(counter) > in_oversize_frames_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_oversize_frames_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_oversize_frames_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -313,20 +314,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Oversize Frames.svg", write_to=f"Test Results/{ self.device.alias } Input Oversize Frames.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Oversize Frames Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Oversize Frames.png", open(f"Test Results/{ self.device.alias } Input Oversize Frames.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Oversize Frames',
+                          'files': (f"Test Results/{ self.device.alias } Input Oversize Frames.png", open(f"Test Results/{ self.device.alias } Input Oversize Frames.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input oversize frames')
         else:
             self.passed('No interfaces have input oversize frames')
@@ -339,6 +339,7 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Output MAC Pause Frames")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Output Output MAC Pause Frames Threshold", style="magenta")
         table.add_column("Output Output MAC Pause Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
@@ -346,12 +347,12 @@ class Test_Interfaces(aetest.Testcase):
                 counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['out-mac-pause-frames']
                 if counter:
                     if int(counter) > in_output_pause_frames_threshold:
-                        table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                        table.add_row(self.device.alias,intf['name'],str(in_output_pause_frames_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
                     else:
-                        table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                        table.add_row(self.device.alias,intf['name'],str(in_output_pause_frames_threshold),counter,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -366,20 +367,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output MAC Pause Frames.svg", write_to=f"Test Results/{ self.device.alias } Output MAC Pause Frames.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output MAC Pause Frames Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Output MAC Pause Frames',
+                          'files': (f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", open(f"Test Results/{ self.device.alias } Output MAC Pause Frames.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have output MAC pause frames')
         else:
             self.passed('No interfaces have output MAC pause frames')
@@ -392,18 +392,19 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input Discards")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Discards Threshold", style="magenta")
         table.add_column("Input Discards", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['in-discards']
             if counter:
                 if int(counter) > in_discards_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -418,20 +419,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Discards.svg", write_to=f"Test Results/{ self.device.alias } Input Discards.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Discards Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Discards.png", open(f"Test Results/{ self.device.alias } Input Discards.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Discards',
+                          'files': (f"Test Results/{ self.device.alias } Input Discards.png", open(f"Test Results/{ self.device.alias } Input Discards.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input discards')
         else:
             self.passed('No interfaces have input discards')
@@ -444,18 +444,19 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input Discards")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Errors Threshold", style="magenta")
         table.add_column("Input Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['in-discards']
             if counter:
                 if int(counter) > in_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(in_errors_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(in_errors_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -470,20 +471,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Errors.svg", write_to=f"Test Results/{ self.device.alias } Input Errors.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Errors.png", open(f"Test Results/{ self.device.alias } Input Errors.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Errors',
+                          'files': (f"Test Results/{ self.device.alias } Input Errors.png", open(f"Test Results/{ self.device.alias } Input Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input errors')
         else:
             self.passed('No interfaces have input errors')        
@@ -496,18 +496,19 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Input FCS Errors")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input FCS Errors Threshold", style="magenta")
         table.add_column("Input FCS Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['in-fcs-errors']
             if counter:
                 if int(counter) > in_fcs_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(in_fcs_errors_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(in_fcs_errors_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -522,20 +523,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input FCS Errors.svg", write_to=f"Test Results/{ self.device.alias } Input FCS Errors.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input FCS Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input FCS Errors.png", open(f"Test Results/{ self.device.alias } Input FCS Errors.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input FCS Errors',
+                          'files': (f"Test Results/{ self.device.alias } Input FCS Errors.png", open(f"Test Results/{ self.device.alias } Input FCS Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input fcs errors')
         else:
             self.passed('No interfaces have input fcs errors') 
@@ -545,21 +545,22 @@ class Test_Interfaces(aetest.Testcase):
         # Test for input unknown protocols
         in_unknown_threshold = 0
         self.failed_interfaces = {}
-        table = Table(title="Interface Input FCS Errors")
+        table = Table(title="Interface Input Unknown Protocols")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
-        table.add_column("Input Unknown Protocols Counter", style="magenta")
+        table.add_column("Input Unknown Protocols Threshold", style="magenta")
+        table.add_column("Input Unknown Protocols", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['in-unknown-protos']
             if counter:
                 if int(counter) > in_unknown_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(in_unknown_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(in_unknown_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -574,20 +575,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } Input Unknown Protocols.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Input Unknown Protocols Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Input Unknown Protocols.png", open(f"Test Results/{ self.device.alias } Input Unknown Protocols.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Unknown Protocols',
+                          'files': (f"Test Results/{ self.device.alias } Input Unknown Protocols.png", open(f"Test Results/{ self.device.alias } Input Unknown Protocols.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have input unknown protocols')
         else:
             self.passed('No interfaces have input unknown protocols')    
@@ -600,18 +600,19 @@ class Test_Interfaces(aetest.Testcase):
         table = Table(title="Interface Output Discards")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Output Discard Threshold", style="magenta")
         table.add_column("Output Discard", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['out-discards']
             if counter:
                 if int(counter) > out_discards_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(out_discards_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(out_discards_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -626,20 +627,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output Discards.svg", write_to=f"Test Results/{ self.device.alias } Output Discards.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output Discards Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Output Discards.png", open(f"Test Results/{ self.device.alias } Output Discards.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Output Discards',
+                          'files': (f"Test Results/{ self.device.alias } Output Discards.png", open(f"Test Results/{ self.device.alias } Output Discards.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have output discards')
         else:
             self.passed('No interfaces have output discards')
@@ -649,21 +649,22 @@ class Test_Interfaces(aetest.Testcase):
         # test for interface output errors
         out_errors_threshold = 0
         self.failed_interfaces = {}
-        table = Table(title="Interface Output Discards")
+        table = Table(title="Interface Output Errors")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
+        table.add_column("Input Errors Threshold", style="magenta")
         table.add_column("Input Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
         for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             counter = intf['state']['counters']['out-discards']
             if counter:
                 if int(counter) > out_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
+                    table.add_row(self.device.alias,intf['name'],str(out_errors_threshold),counter,'Failed',style="red")
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,intf['name'],str(out_errors_threshold),counter,'Passed',style="green")
             else:
                 table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
         # display the table
@@ -678,20 +679,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Output Errors.svg", write_to=f"Test Results/{ self.device.alias } Output Errors.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Output Errors.png", open(f"Test Results/{ self.device.alias } Output Errors.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Output Errors',
+                          'files': (f"Test Results/{ self.device.alias } Output Errors.png", open(f"Test Results/{ self.device.alias } Output Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces have output errors')
         else:
             self.passed('No interfaces have output errors')
@@ -701,7 +701,7 @@ class Test_Interfaces(aetest.Testcase):
         # test for interface output errors
         duplex_threshold = "FULL"
         self.failed_interfaces = {}        
-        table = Table(title="Interface Output Discards")
+        table = Table(title="Interface Full Duplex")
         table.add_column("Device", style="cyan")
         table.add_column("Interface", style="blue")
         table.add_column("Duplex Mode", style="magenta")
@@ -730,20 +730,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", open(f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interfaces that are not Full Duplex',
+                          'files': (f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", open(f"Test Results/{ self.device.alias } Interfaces Are Full Duplex.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces are not full duplex')
         else:
             self.passed('All interfaces are full duplex')
@@ -781,20 +780,19 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", open(f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
         # should we pass or fail?
         if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interfaces with Admin and Oper Status mismatches',
+                          'files': (f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", open(f"Test Results/{ self.device.alias } Interfaces Admin Status Matches Oper Status.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
             self.failed('Some interfaces are admin / oper state mismatch')
         else:
             self.passed('All interfaces admin / oper state match')
@@ -828,21 +826,20 @@ class Test_Interfaces(aetest.Testcase):
         # Save SVG to PNG
         cairosvg.svg2png(url=f"Test Results/{ self.device.alias } Interfaces Have Descriptions.svg", write_to=f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png")
 
-        if webexToken:
-            m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                      'text': f'{ self.device.alias } Output Errors Test Results',
-                      'files': (f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", 'rb'),
-                      'image/png')})
-
-            webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
-                  headers={'Authorization': f'Bearer { webexToken }',
-                  'Content-Type': m.content_type})
-
-            print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
-
     # should we pass or fail?
         if self.failed_interfaces:
-           self.failed('Some interfaces have no description')            
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } Has Interfaces without Descriptions',
+                          'files': (f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } Interfaces Have Descriptions.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)           
+            self.failed('Some interfaces have no description')            
         else:
             self.passed('All interfaces have descriptions')
 
