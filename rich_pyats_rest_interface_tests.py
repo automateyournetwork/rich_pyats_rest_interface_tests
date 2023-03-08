@@ -41,6 +41,7 @@ class common_setup(aetest.CommonSetup):
     def loop_mark(self, testbed):
         aetest.loop.mark(Test_OpenConfig_Interface, device_name=testbed.devices)
         aetest.loop.mark(Test_Cisco_IOS_XE_Interface_Oper, device_name=testbed.devices)
+        aetest.loop.mark(Test_IETF_Interface, device_name=testbed.devices)
 
 # ----------------
 # Test Case #1
@@ -1820,7 +1821,7 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
 
     @aetest.test
     def test_interface_admin_oper_status(self):
-    # Test for oper status
+    # Test for admin oper status
         self.failed_interfaces = {}
         table = Table(title="Interface Admin / Oper Status")
         table.add_column("Device", style="cyan")
@@ -1868,6 +1869,389 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('All interfaces admin / oper state match')
 
+class Test_IETF_Interface(aetest.Testcase):
+    """Parse the IETF Interface Oper YANG Model"""
+
+    @aetest.test
+    def setup(self, testbed, device_name):
+        """ Testcase Setup section"""
+        # Loop over devices in tested for testing
+        self.device = testbed.devices[device_name]
+    
+    @aetest.test
+    def get_test_yang_data(self):
+        # Use the RESTCONF IETF YANG Model 
+        parsed_ietf_interfaces_oper = self.device.rest.get("/restconf/data/ietf-interfaces:interfaces")
+        # Get the JSON payload
+        self.parsed_json=parsed_ietf_interfaces_oper.json()
+
+    @aetest.test
+    def create_pre_test_files(self):
+        # Create .JSON file
+        with open(f'JSON/{self.device.alias}_IETF_Interfaces.json', 'w') as f:
+            f.write(json.dumps(self.parsed_json, indent=4, sort_keys=True))
+
+    @aetest.test
+    def get_test_yang_state_data(self):
+        # Use the RESTCONF IETF YANG Model 
+        parsed_ieft_interface_state_oper = self.device.rest.get("/restconf/data/ietf-interfaces:interfaces-state")
+        # Get the JSON payload
+        self.parsed_state_json=parsed_ieft_interface_state_oper.json()
+
+    @aetest.test
+    def create_pre_test_state_files(self):
+        # Create .JSON file
+        with open(f'JSON/{self.device.alias}_IETF_Interfaces State.json', 'w') as f:
+            f.write(json.dumps(self.parsed_state_json, indent=4, sort_keys=True))
+    
+    @aetest.test
+    def test_interface_description(self):
+    # Test for description
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Has Description")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Description", style="magenta")
+        table.add_column("Passed/Failed", style="green")        
+        for self.intf in self.parsed_json['ietf-interfaces:interfaces']['interface']:
+            if 'description' in self.intf:
+                actual_desc = self.intf['description']
+                if actual_desc:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Passed',style="green")
+                else:
+                    table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
+                    self.failed_interfaces = "failed"
+            else:
+                table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
+                self.failed_interfaces = "failed"
+
+    #     # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Table as SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interfaces Have Descriptions.svg", title = f"{ self.device.alias } IETF Interfaces Have Descriptions")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interfaces Have Descriptions.svg", write_to=f"Test Results/{ self.device.alias } IETF Interfaces Have Descriptions.png")
+
+    # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } Has Interfaces without Descriptions',
+                          'files': (f"Test Results/{ self.device.alias } IETF Interfaces Have Descriptions.png", open(f"Test Results/{ self.device.alias } IETF Interfaces Have Descriptions.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)           
+            self.failed('Some interfaces have no description')            
+        else:
+            self.passed('All interfaces have descriptions')
+
+    @aetest.test
+    def test_input_discards(self):
+        # Test for input discards
+        input_discards_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Input Discards")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Input Discards Threshold", style="magenta")
+        table.add_column("Input Dicards", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:
+            if 'in-discards' in intf['statistics']:
+                counter = int(intf['statistics']['in-discards'])
+                if counter > input_discards_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(input_discards_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(input_discards_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Discards.svg", title = f"{ self.device.alias } IEFT Interface Input Discards")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Discards.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Discards',
+                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have input discards')
+        else:
+            self.passed('No interfaces have input discards')
+
+    @aetest.test
+    def test_input_errors(self):
+        # Test for input errors
+        input_errors_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Input Errors")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Input Errors Threshold", style="magenta")
+        table.add_column("Input Errors", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:
+            if 'in-errors' in intf['statistics']:
+                counter = int(intf['statistics']['in-errors'])
+                if counter > input_errors_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(input_errors_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(input_errors_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Errors.svg", title = f"{ self.device.alias } IEFT Interface Input Errors")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Errors.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Errors',
+                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have input errors')
+        else:
+            self.passed('No interfaces have input errors')
+
+    @aetest.test
+    def test_input_unknown_protocols(self):
+        # Test for input unknown protocols
+        input_unknown_protocols_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Input Unknown Protocols")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Input Unknown Protocols Threshold", style="magenta")
+        table.add_column("Input Unknown Protocols", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:
+            if 'in-unknown-protos' in intf['statistics']:
+                counter = int(intf['statistics']['in-unknown-protos'])
+                if counter > input_unknown_protocols_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(input_unknown_protocols_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(input_unknown_protocols_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.svg", title = f"{ self.device.alias } IEFT Interface Input Unknown Protocols")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Input Unknown Protocols',
+                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have input unknown protocols')
+        else:
+            self.passed('No interfaces have input unknown protocols')
+
+    @aetest.test
+    def test_output_discards(self):
+        # Test for output discards
+        output_discards_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Output Discards")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Output Discards Threshold", style="magenta")
+        table.add_column("Output Dicards", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:
+            if 'out-discards' in intf['statistics']:
+                counter = int(intf['statistics']['out-discards'])
+                if counter > output_discards_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(output_discards_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(output_discards_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Output Discards.svg", title = f"{ self.device.alias } IEFT Interface Output Discards")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Output Discards.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Output Discards',
+                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png", open(f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have output discards')
+        else:
+            self.passed('No interfaces have output discards')
+
+    @aetest.test
+    def test_output_errors(self):
+        # Test for output errors
+        output_errors_threshold = 0
+        self.failed_interfaces = {}
+        table = Table(title="IETF Interface Output Errors")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Output Errors Threshold", style="magenta")
+        table.add_column("Output Errors", style="magenta")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:
+            if 'out-errors' in intf['statistics']:
+                counter = int(intf['statistics']['out-errors'])
+                if counter > output_errors_threshold:
+                    table.add_row(self.device.alias,intf['name'],str(output_errors_threshold),str(counter),'Failed',style="red")
+                    self.failed_interfaces[intf['name']] = int(counter)
+                    self.interface_name = intf['name']
+                    self.error_counter = self.failed_interfaces[intf['name']]
+                else:
+                    table.add_row(self.device.alias,intf['name'],str(output_errors_threshold),str(counter),'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Tabele to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Output Errors.svg", title = f"{ self.device.alias } IEFT Interface Output Errors")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Output Errors.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interface Output Errors',
+                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png", open(f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces have output errors')
+        else:
+            self.passed('No interfaces have output errors')
+
+    @aetest.test
+    def test_interface_admin_oper_status(self):
+    # Test for oper status
+        self.failed_interfaces = {}
+        table = Table(title="Interface Admin / Oper Status")
+        table.add_column("Device", style="cyan")
+        table.add_column("Interface", style="blue")
+        table.add_column("Admin Status", style="magenta")
+        table.add_column("Oper Status", style="green")
+        table.add_column("Passed/Failed", style="green")
+        for intf in self.parsed_state_json['ietf-interfaces:interfaces-state']['interface']:           
+            admin_status = intf['admin-status']
+            oper_status = intf['oper-status']
+            if oper_status != admin_status:
+                table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Failed',style="red")
+                self.failed_interfaces[intf['name']] = oper_status
+                self.interface_name = intf['name']
+                self.error_counter = self.failed_interfaces[intf['name']]
+            else:
+                table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Passed',style="green")
+        # display the table
+        console = Console(record=True)
+        with console.capture() as capture:
+            console.print(table,justify="center")
+        log.info(capture.get())
+
+        # Save Table to SVG
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status.svg", title = f"{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status")
+
+        # Save SVG to PNG
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status.svg", write_to=f"Test Results/{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status.png")
+
+        # should we pass or fail?
+        if self.failed_interfaces:
+            if webexToken:
+                m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                          'text': f'The device { self.device.alias } has Interfaces with Admin and Oper Status mismatches',
+                          'files': (f"Test Results/{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status.png", open(f"Test Results/{ self.device.alias } IETF Interfaces Admin Status Matches Oper Status.png", 'rb'),
+                          'image/png')})
+
+                webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+                      headers={'Authorization': f'Bearer { webexToken }',
+                      'Content-Type': m.content_type})
+
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+            self.failed('Some interfaces are admin / oper state mismatch')
+        else:
+            self.passed('All interfaces admin / oper state match')
 class CommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, testbed):
