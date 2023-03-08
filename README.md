@@ -86,8 +86,42 @@ Output Pause Frames
 
 ### Cisco-IOS-XE-interfaces-oper:interfaces
 
+Interface Admin Status Matches Oper Status
+
 Interface Has Description
+
+Interface Flaps
 
 Input CRC Errors
 
 Input Discards
+
+Input Discards 64
+
+Input Errors
+
+Input Errors 64
+
+Input Unknown Protocols
+
+Input Unknown Protocols 64
+
+Output Discards
+
+Output Errors
+
+v4 Protocols Input Discarded Packets
+
+v4 Protocols Input Error Packets
+
+v4 Protocols Output Discarded Packets
+
+v4 Protocols Output Error Packets
+
+v6 Protocols Input Discarded Packets
+
+v6 Protocols Input Error Packets
+
+v6 Protocols Output Discarded Packets
+
+v6 Protocols Output Error Packets
