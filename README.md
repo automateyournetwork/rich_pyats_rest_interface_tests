@@ -125,3 +125,20 @@ v6 Protocols Input Error Packets
 v6 Protocols Output Discarded Packets
 
 v6 Protocols Output Error Packets
+
+## ietf-interfaces:interfaces
+
+Interface Description
+## ietf-interfaces:interfaces-state
+
+Interface Admin Status Matches Oper Status
+
+Input Discards
+
+Input Errors
+
+Input Unknown Protocols
+
+Output Discards
+
+Output Errors
