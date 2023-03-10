@@ -9,6 +9,7 @@ from rich.console import Console
 from rich.table import Table
 from dotenv import load_dotenv
 from requests_toolbelt.multipart.encoder import MultipartEncoder
+from gtts import gTTS
 
 # ENV FOR WEBEX
 load_dotenv()
@@ -79,19 +80,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input CRC Threshold", style="magenta")
         table.add_column("Input CRC Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-crc-errors']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-crc-errors']
                 if counter:
                     if int(counter) > in_crc_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                        table.add_row(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_input_crc_mp3(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter)
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -121,6 +124,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input CRC errors')
 
+    def send_input_crc_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input CRC errors with { counter } CRC errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input CRC Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input CRC Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input CRC Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_fragment_errors(self):
         # Test for input discards
@@ -132,19 +152,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Fragment Frames Threshold", style="magenta")
         table.add_column("Input Fragment Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-fragment-frames']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-fragment-frames']
                 if counter:
                     if int(counter) > in_fragment_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_fragment_errors_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                        table.add_row(self.device.alias,self.intf['name'],str(in_fragment_errors_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_input_fragment_mp3(self.device.alias,self.intf['name'],str(in_fragment_errors_threshold),counter)                        
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_fragment_errors_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(in_fragment_errors_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -174,6 +196,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input fragment frames')
 
+    def send_input_fragment_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for Input Fragment Frames with { counter } fragments"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Fragment Frames.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Fragment Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Fragment Frames.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_jabber_errors(self):
         # Test for input discards
@@ -185,19 +224,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Jabber Frames Threshold", style="magenta")
         table.add_column("Input Jabber Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-jabber-frames']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-jabber-frames']
                 if counter:
                     if int(counter) > in_jabber_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_jabber_errors_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                        table.add_row(self.device.alias,self.intf['name'],str(in_jabber_errors_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_input_jabber_mp3(self.device.alias,self.intf['name'],str(in_jabber_errors_threshold),counter)
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_jabber_errors_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(in_jabber_errors_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -227,8 +268,25 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input jabber frames')
 
+    def send_input_jabber_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input jabber frames with { counter } jabber frames"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Jabber Frames.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Jabber Frames',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Output Jabber Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Output Jabber Frames.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
-    def test_interface_input_mac_pause_errors(self):
+    def test_interface_input_mac_pause_frames(self):
         # Test for input discards
         in_mac_pause_errors_threshold = 0
         self.failed_interfaces = {}
@@ -238,19 +296,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input MAC Pause Frames Threshold", style="magenta")
         table.add_column("Input MAC Pause Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-mac-pause-frames']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-mac-pause-frames']
                 if counter:
                     if int(counter) > in_mac_pause_errors_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_mac_pause_errors_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                        table.add_row(self.device.alias,self.intf['name'],str(in_mac_pause_errors_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_input_mac_pause_mp3(self.device.alias,self.intf['name'],str(in_mac_pause_errors_threshold),counter)
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_mac_pause_errors_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(in_mac_pause_errors_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -280,6 +340,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input MAC Pause frames')
 
+    def send_input_mac_pause_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input MAC Pause Frames with { counter } MAC Pause Frames"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input MAC Pause Frames.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input MAC Pause Frames',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input MAC Pause Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input MAC Pause Frames.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_oversize_frames_errors(self):
         # Test for input discards
@@ -291,19 +368,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Oversize Frames Threshold", style="magenta")
         table.add_column("Input Oversize Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-oversize-frames']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-oversize-frames']
                 if counter:
                     if int(counter) > in_oversize_frames_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_oversize_frames_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                        table.add_row(self.device.alias,self.intf['name'],str(in_oversize_frames_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_input_oversize_mp3(self.device.alias,self.intf['name'],str(in_oversize_frames_threshold),counter)                        
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_oversize_frames_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(in_oversize_frames_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -333,10 +412,27 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input oversize frames')
 
+    def send_input_oversize_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input oversize frames with { counter } oversize frames"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Oversize Frames.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Oversize Frames',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Oversize Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Oversize Frames.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
-    def test_interface_output_pause_frames_errors(self):
+    def test_interface_output_pause_frames(self):
         # Test for input discards
-        in_output_pause_frames_threshold = 0
+        output_pause_frames_threshold = 0
         self.failed_interfaces = {}
         table = Table(title="Interface Output MAC Pause Frames")
         table.add_column("Device", style="cyan")
@@ -344,19 +440,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Output Output MAC Pause Frames Threshold", style="magenta")
         table.add_column("Output Output MAC Pause Frames", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['counters']['out-mac-pause-frames']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['out-mac-pause-frames']
                 if counter:
-                    if int(counter) > in_output_pause_frames_threshold:
-                        table.add_row(self.device.alias,intf['name'],str(in_output_pause_frames_threshold),counter,'Failed',style="red")
-                        self.failed_interfaces[intf['name']] = int(counter)
-                        self.interface_name = intf['name']
-                        self.error_counter = self.failed_interfaces[intf['name']]
+                    if int(counter) > output_pause_frames_threshold:
+                        table.add_row(self.device.alias,self.intf['name'],str(output_pause_frames_threshold),counter,'Failed',style="red")
+                        self.failed_interfaces[self.intf['name']] = int(counter)
+                        self.interface_name = self.intf['name']
+                        self.error_counter = self.failed_interfaces[self.intf['name']]
+                        if webexToken:
+                            self.send_output_pause_frames_mp3(self.device.alias,self.intf['name'],str(output_pause_frames_threshold),counter)
                     else:
-                        table.add_row(self.device.alias,intf['name'],str(in_output_pause_frames_threshold),counter,'Passed',style="green")
+                        table.add_row(self.device.alias,self.intf['name'],str(output_pause_frames_threshold),counter,'Passed',style="green")
                 else:
-                    table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                    table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -386,6 +484,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have output MAC pause frames')
 
+    def send_output_pause_frames_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for output MAC pause frames with { counter } MAC pause frames"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output MAC Pause Frames.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output MAC Pause Frames',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Output MAC Pause Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Output MAC Pause Frames.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_discards(self):
         # Test for input discards
@@ -397,18 +512,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Discards Threshold", style="magenta")
         table.add_column("Input Discards", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['in-discards']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['in-discards']
             if counter:
                 if int(counter) > in_discards_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(in_discards_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_input_discards_mp3(self.device.alias,self.intf['name'],str(in_discards_threshold),counter)
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(in_discards_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -438,6 +555,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input discards')
 
+    def send_input_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_errors(self):
         # test for interface input errors
@@ -449,18 +583,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Errors Threshold", style="magenta")
         table.add_column("Input Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['in-discards']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['in-discards']
             if counter:
                 if int(counter) > in_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(in_errors_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(in_errors_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_input_errors_mp3(self.device.alias,self.intf['name'],str(in_errors_threshold),counter)
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(in_errors_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(in_errors_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -490,6 +626,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input errors')        
 
+    def send_input_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_fcs_errors(self):
         # Test for input fcs errors
@@ -501,18 +654,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input FCS Errors Threshold", style="magenta")
         table.add_column("Input FCS Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['in-fcs-errors']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['in-fcs-errors']
             if counter:
                 if int(counter) > in_fcs_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(in_fcs_errors_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(in_fcs_errors_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_input_fcs_mp3(self.device.alias,self.intf['name'],str(in_fcs_errors_threshold),counter)                    
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(in_fcs_errors_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(in_fcs_errors_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -542,6 +697,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input fcs errors') 
 
+    def send_input_fcs_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input frame check sequence errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input FCS Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input FCS Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input FCS Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input FCS Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_unknown_protocols(self):
         # Test for input unknown protocols
@@ -553,18 +725,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Unknown Protocols Threshold", style="magenta")
         table.add_column("Input Unknown Protocols", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['in-unknown-protos']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['in-unknown-protos']
             if counter:
                 if int(counter) > in_unknown_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(in_unknown_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(in_unknown_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_input_unknown_protocols_mp3(self.device.alias,self.intf['name'],str(in_unknown_threshold),counter)
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(in_unknown_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(in_unknown_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -594,6 +768,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have input unknown protocols')    
 
+    def send_input_unknown_protocols_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input unknown protocols with { counter } unknown protocols"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Unknown Protocols.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Unknown Protocols',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Unknown Protocols.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Unknown Protocols.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_output_discards(self):
         # Test for output discards
@@ -605,18 +796,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Output Discard Threshold", style="magenta")
         table.add_column("Output Discard", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['out-discards']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['out-discards']
             if counter:
                 if int(counter) > out_discards_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(out_discards_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(out_discards_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_output_discards_mp3(self.device.alias,self.intf['name'],str(out_discards_threshold),counter)
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(out_discards_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(out_discards_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -641,10 +834,27 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
             self.failed('Some interfaces have output discards')
         else:
             self.passed('No interfaces have output discards')
+
+    def send_output_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Output Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_interface_output_errors(self):
@@ -657,18 +867,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Input Errors Threshold", style="magenta")
         table.add_column("Input Errors", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            counter = intf['state']['counters']['out-discards']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            counter = self.intf['state']['counters']['out-discards']
             if counter:
                 if int(counter) > out_errors_threshold:
-                    table.add_row(self.device.alias,intf['name'],str(out_errors_threshold),counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = int(counter)
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],str(out_errors_threshold),counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = int(counter)
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_output_errors_mp3(self.device.alias,self.intf['name'],str(out_errors_threshold),counter)
                 else:
-                    table.add_row(self.device.alias,intf['name'],str(out_errors_threshold),counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],str(out_errors_threshold),counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -698,6 +910,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('No interfaces have output errors')
 
+    def send_output_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for output errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Output Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Output Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_full_duplex(self):
         # test for interface output errors
@@ -708,18 +937,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Interface", style="blue")
         table.add_column("Duplex Mode", style="magenta")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'openconfig-if-ethernet:ethernet' in intf:
-                counter = intf['openconfig-if-ethernet:ethernet']['state']['negotiated-duplex-mode']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'openconfig-if-ethernet:ethernet' in self.intf:
+                counter = self.intf['openconfig-if-ethernet:ethernet']['state']['negotiated-duplex-mode']
                 if counter != duplex_threshold:
-                    table.add_row(self.device.alias,intf['name'],counter,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = counter
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],counter,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = counter
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_full_duplex_mp3(self.device.alias,self.intf['name'],counter)                    
                 else:
-                    table.add_row(self.device.alias,intf['name'],counter,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],counter,'Passed',style="green")
             else:
-                table.add_row(self.device.alias,intf['name'],'N/A','N/A',style="yellow")           
+                table.add_row(self.device.alias,self.intf['name'],'N/A','N/A',style="yellow")           
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -748,7 +979,24 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             self.failed('Some interfaces are not full duplex')
         else:
             self.passed('All interfaces are full duplex')
-  
+
+    def send_full_duplex_mp3(self,alias,intf,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } is duplex { counter }"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Duplex.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } is { counter } duplex',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Duplex.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Duplex.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_admin_oper_status(self):
     # Test for oper status
@@ -759,17 +1007,19 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         table.add_column("Admin Status", style="magenta")
         table.add_column("Oper Status", style="green")
         table.add_column("Passed/Failed", style="green")
-        for intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
-            if 'admin-status' in intf['state']:            
-                admin_status = intf['state']['admin-status']
-                oper_status = intf['state']['oper-status']
+        for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
+            if 'admin-status' in self.intf['state']:            
+                admin_status = self.intf['state']['admin-status']
+                oper_status = self.intf['state']['oper-status']
                 if oper_status != admin_status:
-                    table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Failed',style="red")
-                    self.failed_interfaces[intf['name']] = oper_status
-                    self.interface_name = intf['name']
-                    self.error_counter = self.failed_interfaces[intf['name']]
+                    table.add_row(self.device.alias,self.intf['name'],admin_status,oper_status,'Failed',style="red")
+                    self.failed_interfaces[self.intf['name']] = oper_status
+                    self.interface_name = self.intf['name']
+                    self.error_counter = self.failed_interfaces[self.intf['name']]
+                    if webexToken:
+                        self.send_admin_oper_mp3(self.device.alias,self.intf['name'],admin_status,oper_status)
                 else:
-                    table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Passed',style="green")
+                    table.add_row(self.device.alias,self.intf['name'],admin_status,oper_status,'Passed',style="green")
         # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -799,6 +1049,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         else:
             self.passed('All interfaces admin / oper state match')
 
+    def send_admin_oper_mp3(self,alias,intf,admin,oper):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } is admin { admin } but Oper { oper }"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Admin Oper Status.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } is admin { admin } but oper { oper }',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Admin Oper Status.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Admin Oper Status.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_description(self):
     # Test for description
@@ -816,9 +1083,14 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                 else:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
                     self.failed_interfaces = "failed"
+                    if webexToken:
+                        self.send_description_mp3(self.device.alias,self.intf['name'])
             else:
                 table.add_row(self.device.alias,self.intf['name'],"N/A",'Failed',style="red")
-                self.failed_interfaces = "failed"                                    
+                self.failed_interfaces = "failed"
+                if webexToken:
+                    self.send_description_mp3(self.device.alias,self.intf['name'])
+
     #     # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -847,6 +1119,23 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             self.failed('Some interfaces have no description')            
         else:
             self.passed('All interfaces have descriptions')
+
+    def send_description_mp3(self,alias,intf):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface has no description"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Description.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has no description',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Description.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Description.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
 class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
     """Parse the Cisco IOS XE Interface Oper YANG Model"""
@@ -887,6 +1176,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                 else:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
                     self.failed_interfaces = "failed"
+                    if webexToken:
+                        self.send_int_description_mp3(self.device.alias,self.intf['name'])
     #     # display the table
         console = Console(record=True)
         with console.capture() as capture:
@@ -916,6 +1207,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('All interfaces have descriptions')
 
+    def send_int_description_mp3(self,alias,intf):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has no description"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Has Descriptions.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has no description',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Has Descriptions.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Has Descriptions.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_crc_errors(self):
         # Test for input crc errors
@@ -936,6 +1244,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                         self.failed_interfaces[intf['name']] = int(counter)
                         self.interface_name = intf['name']
                         self.error_counter = self.failed_interfaces[intf['name']]
+                        if webexToken:
+                            self.send_input_crc_mp3(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter)
                     else:
                         table.add_row(self.device.alias,intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
                 else:
@@ -969,6 +1279,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input CRC errors')
 
+    def send_input_crc_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input crc errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input CRC Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input crc errors with { counter } crc errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input CRC Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input CRC Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_discards(self):
         # Test for input discards
@@ -988,6 +1315,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_discards_mp3(self.device.alias,self.intf['name'],str(in_discards_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_discards_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1019,6 +1348,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input discards')
 
+    def send_input_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_discards_64(self):
         # Test for input discards 64
@@ -1038,6 +1384,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_discards64_mp3(self.device.alias,self.intf['name'],str(in_discards_64_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_discards_64_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1069,6 +1417,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input discards 64')
 
+    def send_input_discards64_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input discards 64 with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Discards 64.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Discards 64.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Discards 64.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_errors(self):
         # Test for input errors
@@ -1088,6 +1453,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_errors_mp3(self.device.alias,self.intf['name'],str(in_errors_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_errors_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1119,6 +1486,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input errors')
 
+    def send_input_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_errors_64(self):
         # Test for input errors 64
@@ -1138,6 +1522,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_errors64_mp3(self.device.alias,self.intf['name'],str(in_errors_64_threshold),counter)                    
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_errors_64_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1169,6 +1555,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input errors 64')
 
+    def send_input_errors64_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input errors 64 with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Errors 64.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input errors 64 with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Errors 64.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Errors 64.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_unknown_protocols(self):
         # Test for input unknown-protos
@@ -1188,6 +1591,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_unknown_protocols_mp3(self.device.alias,self.intf['name'],str(in_unknown_protocols_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_unknown_protocols_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1219,6 +1624,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input unknown protocols')
 
+    def send_input_unknown_protocols_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input unknown protocols with { counter } unknown protocols"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input unknown protocols with { counter } unknown protocols',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_input_unknown_protocols_64(self):
         # Test for input unknown protocols 64
@@ -1238,6 +1660,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_unknown_protocols64_mp3(self.device.alias,self.intf['name'],str(in_unknown_protocols_64_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(in_unknown_protocols_64_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1269,6 +1693,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have input unknown protocols 64')
 
+    def send_input_unknown_protocols64_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for input unknown protocols 64 with { counter } unknown protocols 64"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for input unknown protocols 64 with { counter } unknown protocols 64',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols 64.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Input Unknown Protocols 64.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_number_flaps(self):
         # Test for interface flaps
@@ -1288,6 +1729,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_flaps_mp3(self.device.alias,self.intf['name'],str(flaps_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(flaps_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1319,6 +1762,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have flaps')
 
+    def send_flaps_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for flaps with { counter } flaps"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Flaps.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for flaps with { counter } flaps',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Flaps.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Flaps.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_output_discards(self):
         # Test for output discards
@@ -1338,6 +1798,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_output_discards_mp3(self.device.alias,self.intf['name'],str(output_discards_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_discards_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1369,6 +1831,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have output discards')
 
+    def send_output_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_output_errors(self):
         # Test for output errors
@@ -1388,6 +1867,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_output_errors_mp3(self.device.alias,self.intf['name'],str(output_errors_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_errors_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1419,6 +1900,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have output errors')
 
+    def send_output_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for output errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Output Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for output errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v4_protocol_input_discarded_packets(self):
         # Test for v4 protocol input discarded packets
@@ -1438,6 +1936,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v4_protocol_input_discards_mp3(self.device.alias,self.intf['name'],str(input_discarded_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_discarded_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1469,6 +1969,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v4 protocol input discarded packets')
 
+    def send_v4_protocol_input_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol input discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol input discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v4_protocol_input_error_packets(self):
         # Test for v4 protocol input error packets
@@ -1488,6 +2005,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v4_protocol_input_errors_mp3(self.device.alias,self.intf['name'],str(input_error_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_error_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1519,6 +2038,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v4 protocol input error packets')
 
+    def send_v4_protocol_input_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol input errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol input errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Input Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v4_protocol_output_discarded_packets(self):
         # Test for v4 protocol output discarded packets
@@ -1538,6 +2074,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v4_protocol_output_discards_mp3(self.device.alias,self.intf['name'],str(output_discarded_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_discarded_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1569,6 +2107,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v4 protocol output discarded packets')
 
+    def send_v4_protocol_output_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol output discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol output discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v4_protocol_output_error_packets(self):
         # Test for v4 protocol output error packets
@@ -1588,6 +2143,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v4_protocol_output_errors_mp3(self.device.alias,self.intf['name'],str(output_error_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_error_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1619,6 +2176,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v4 protocol output error packets')
 
+    def send_v4_protocol_output_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol output errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v4 protocol output errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v4 Protocol Output Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v6_protocol_input_discarded_packets(self):
         # Test for v4 protocol input discarded packets
@@ -1638,6 +2212,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v6_protocol_input_discards_mp3(self.device.alias,self.intf['name'],str(input_discarded_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_discarded_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1669,6 +2245,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v6 protocol input discarded packets')
 
+    def send_v6_protocol_input_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol input discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol input discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v6_protocol_input_error_packets(self):
         # Test for v6 protocol input error packets
@@ -1688,6 +2281,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v6_protocol_input_errors_mp3(self.device.alias,self.intf['name'],str(input_error_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_error_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1719,6 +2314,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v6 protocol input error packets')
 
+    def send_v6_protocol_input_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol input errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol input errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Input Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v6_protocol_output_discarded_packets(self):
         # Test for v6 protocol output discarded packets
@@ -1738,6 +2350,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v6_protocol_output_discards_mp3(self.device.alias,self.intf['name'],str(output_discarded_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_discarded_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1769,6 +2383,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v6 protocol output discarded packets')
 
+    def send_v6_protocol_output_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol output discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol output discards with { counter } discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_v6_protocol_output_error_packets(self):
         # Test for v6 protocol output error packets
@@ -1788,6 +2419,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_v6_protocol_output_errors_mp3(self.device.alias,self.intf['name'],str(output_error_packets_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_error_packets_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1819,6 +2452,23 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('No interfaces have v6 protocol output error packets')
 
+    def send_v6_protocol_output_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol output errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for v6 protocol output errors with { counter } errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces v6 Protocol Output Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_interface_admin_oper_status(self):
     # Test for admin oper status
@@ -1838,6 +2488,8 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = oper_status
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_admin_oper_mp3(self.device.alias,self.intf['name'],admin_status,oper_status)
                 else:
                     table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Passed',style="green")
         # display the table
@@ -1869,6 +2521,22 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         else:
             self.passed('All interfaces admin / oper state match')
 
+    def send_admin_oper_mp3(self,alias,intf,admin,oper):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } is admin { admin } but Oper { oper }"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS-XE Interface Admin Oper Status.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } is admin { admin } but oper { oper }',
+                  'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS-XE Interface Admin Oper Status.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS-XE Interface Admin Oper Status.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 class Test_IETF_Interface(aetest.Testcase):
     """Parse the IETF Interface Oper YANG Model"""
 
@@ -1894,9 +2562,9 @@ class Test_IETF_Interface(aetest.Testcase):
     @aetest.test
     def get_test_yang_state_data(self):
         # Use the RESTCONF IETF YANG Model 
-        parsed_ieft_interface_state_oper = self.device.rest.get("/restconf/data/ietf-interfaces:interfaces-state")
+        parsed_IETF_interface_state_oper = self.device.rest.get("/restconf/data/ietf-interfaces:interfaces-state")
         # Get the JSON payload
-        self.parsed_state_json=parsed_ieft_interface_state_oper.json()
+        self.parsed_state_json=parsed_IETF_interface_state_oper.json()
 
     @aetest.test
     def create_pre_test_state_files(self):
@@ -1921,6 +2589,8 @@ class Test_IETF_Interface(aetest.Testcase):
                 else:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
                     self.failed_interfaces = "failed"
+                    if webexToken:
+                        self.send_description_mp3(self.device.alias,self.intf['name'])                    
             else:
                 table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
                 self.failed_interfaces = "failed"
@@ -1954,6 +2624,23 @@ class Test_IETF_Interface(aetest.Testcase):
         else:
             self.passed('All interfaces have descriptions')
 
+    def send_description_mp3(self,alias,intf):
+        language = 'en'
+        mp3_output = f"The Device { alias } Interface has no description"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interfaces Description.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has no description',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interfaces Description.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interfaces Description.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
     @aetest.test
     def test_input_discards(self):
         # Test for input discards
@@ -1973,6 +2660,8 @@ class Test_IETF_Interface(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_discards_mp3(self.device.alias,self.intf['name'],str(in_discards_threshold),counter)                    
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_discards_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -1982,17 +2671,17 @@ class Test_IETF_Interface(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Discards.svg", title = f"{ self.device.alias } IEFT Interface Input Discards")
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interface Input Discards.svg", title = f"{ self.device.alias } IETF Interface Input Discards")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Discards.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interface Input Discards.svg", write_to=f"Test Results/{ self.device.alias } IETF Interface Input Discards.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Discards',
-                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Discards.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } IETF Interface Input Discards.png", open(f"Test Results/{ self.device.alias } IETF Interface Input Discards.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -2003,6 +2692,23 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces have input discards')
         else:
             self.passed('No interfaces have input discards')
+
+    def send_input_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Input Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Input Discards.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Input Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_input_errors(self):
@@ -2023,6 +2729,8 @@ class Test_IETF_Interface(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_errors_mp3(self.device.alias,self.intf['name'],str(input_errors_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_errors_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -2032,17 +2740,17 @@ class Test_IETF_Interface(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Errors.svg", title = f"{ self.device.alias } IEFT Interface Input Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interface Input Errors.svg", title = f"{ self.device.alias } IETF Interface Input Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Errors.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interface Input Errors.svg", write_to=f"Test Results/{ self.device.alias } IETF Interface Input Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Errors',
-                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } IETF Interface Input Errors.png", open(f"Test Results/{ self.device.alias } IETF Interface Input Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -2053,6 +2761,23 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces have input errors')
         else:
             self.passed('No interfaces have input errors')
+
+    def send_input_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Input Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Input Errors.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Input Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_input_unknown_protocols(self):
@@ -2073,6 +2798,8 @@ class Test_IETF_Interface(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_input_unknown_protocols_mp3(self.device.alias,self.intf['name'],str(input_unknown_protocols_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(input_unknown_protocols_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -2082,17 +2809,17 @@ class Test_IETF_Interface(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.svg", title = f"{ self.device.alias } IEFT Interface Input Unknown Protocols")
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interface Input Unknown Protocols.svg", title = f"{ self.device.alias } IETF Interface Input Unknown Protocols")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interface Input Unknown Protocols.svg", write_to=f"Test Results/{ self.device.alias } IETF Interface Input Unknown Protocols.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Input Unknown Protocols',
-                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png", open(f"Test Results/{ self.device.alias } IEFT Interface Input Unknown Protocols.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } IETF Interface Input Unknown Protocols.png", open(f"Test Results/{ self.device.alias } IETF Interface Input Unknown Protocols.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -2103,6 +2830,23 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces have input unknown protocols')
         else:
             self.passed('No interfaces have input unknown protocols')
+
+    def send_input_unknown_protocols_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input unknown protocols with { counter } unknown protocols"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Input Unknown Protocols.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Unknown Protocols',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Input Unknown Protocols.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Input Unknown Protocols.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_output_discards(self):
@@ -2123,6 +2867,8 @@ class Test_IETF_Interface(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_output_discards_mp3(self.device.alias,self.intf['name'],str(output_discards_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_discards_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -2132,17 +2878,17 @@ class Test_IETF_Interface(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Output Discards.svg", title = f"{ self.device.alias } IEFT Interface Output Discards")
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interface Output Discards.svg", title = f"{ self.device.alias } IETF Interface Output Discards")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Output Discards.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interface Output Discards.svg", write_to=f"Test Results/{ self.device.alias } IETF Interface Output Discards.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Output Discards',
-                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png", open(f"Test Results/{ self.device.alias } IEFT Interface Output Discards.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } IETF Interface Output Discards.png", open(f"Test Results/{ self.device.alias } IETF Interface Output Discards.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -2153,6 +2899,23 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces have output discards')
         else:
             self.passed('No interfaces have output discards')
+
+    def send_output_discards_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Output Discards.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Discards',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Output Discards.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_output_errors(self):
@@ -2173,6 +2936,8 @@ class Test_IETF_Interface(aetest.Testcase):
                     self.failed_interfaces[intf['name']] = int(counter)
                     self.interface_name = intf['name']
                     self.error_counter = self.failed_interfaces[intf['name']]
+                    if webexToken:
+                        self.send_output_errors_mp3(self.device.alias,self.intf['name'],str(output_errors_threshold),counter)
                 else:
                     table.add_row(self.device.alias,intf['name'],str(output_errors_threshold),str(counter),'Passed',style="green")
         # display the table
@@ -2182,17 +2947,17 @@ class Test_IETF_Interface(aetest.Testcase):
         log.info(capture.get())
 
         # Save Tabele to SVG
-        console.save_svg(f"Test Results/{ self.device.alias } IEFT Interface Output Errors.svg", title = f"{ self.device.alias } IEFT Interface Output Errors")
+        console.save_svg(f"Test Results/{ self.device.alias } IETF Interface Output Errors.svg", title = f"{ self.device.alias } IETF Interface Output Errors")
 
         # Save SVG to PNG
-        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IEFT Interface Output Errors.svg", write_to=f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png")
+        cairosvg.svg2png(url=f"Test Results/{ self.device.alias } IETF Interface Output Errors.svg", write_to=f"Test Results/{ self.device.alias } IETF Interface Output Errors.png")
 
         # should we pass or fail?
         if self.failed_interfaces:
             if webexToken:
                 m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                           'text': f'The device { self.device.alias } has Interface Output Errors',
-                          'files': (f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png", open(f"Test Results/{ self.device.alias } IEFT Interface Output Errors.png", 'rb'),
+                          'files': (f"Test Results/{ self.device.alias } IETF Interface Output Errors.png", open(f"Test Results/{ self.device.alias } IETF Interface Output Errors.png", 'rb'),
                           'image/png')})
 
                 webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -2203,6 +2968,23 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces have output errors')
         else:
             self.passed('No interfaces have output errors')
+
+    def send_output_errors_mp3(self,alias,intf,threshold,counter):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for output errors with { counter } errors"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Output Errors.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Errors',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Output Errors.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Output Errors.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
     @aetest.test
     def test_interface_admin_oper_status(self):
@@ -2222,6 +3004,8 @@ class Test_IETF_Interface(aetest.Testcase):
                 self.failed_interfaces[intf['name']] = oper_status
                 self.interface_name = intf['name']
                 self.error_counter = self.failed_interfaces[intf['name']]
+                if webexToken:
+                    self.send_admin_oper_mp3(self.device.alias,self.intf['name'],admin_status,oper_status)
             else:
                 table.add_row(self.device.alias,intf['name'],admin_status,oper_status,'Passed',style="green")
         # display the table
@@ -2252,6 +3036,24 @@ class Test_IETF_Interface(aetest.Testcase):
             self.failed('Some interfaces are admin / oper state mismatch')
         else:
             self.passed('All interfaces admin / oper state match')
+
+    def send_admin_oper_mp3(self,alias,intf,admin,oper):
+        language = 'en'
+        mp3_output = f"The Device { alias } on Interface { intf } is admin { admin } but Oper { oper }"
+        mp3 = gTTS(text = mp3_output, lang=language)
+        #Save MP3
+        mp3.save(f'MP3/{ alias } { intf } IETF Interface Admin Oper Status.mp3')
+        m = MultipartEncoder({'roomId': f'{ webexRoomId }',
+                  'text': f'The device { self.device.alias } Interface { intf } is admin { admin } but oper { oper }',
+                  'files': (f"MP3/{ self.device.alias } { intf } IETF Interface Admin Oper Status.mp3", open(f"MP3/{ self.device.alias } { intf } IETF Interface Admin Oper Status.mp3", 'rb'),
+                  'audio/mp3')})
+
+        webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
+              headers={'Authorization': f'Bearer { webexToken }',
+              'Content-Type': m.content_type})
+        
+        print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
 class CommonCleanup(aetest.CommonCleanup):
     @aetest.subsection
     def disconnect_from_devices(self, testbed):
