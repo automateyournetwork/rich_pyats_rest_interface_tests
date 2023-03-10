@@ -3,7 +3,7 @@ Examples of pyATS REST Connector with IOS-XE / NXOS YANG Model Interface level t
 
 ## Ready to go with the Cisco CML
 
-[Always On IOS-XE Sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/7b4d4209-a17c-4bc3-9b38-f15184e53a94?diagramType=Topology)
+[Always On IOS-XE Sandbox](https://devnetsandbox.cisco.com/RM/Diagram/Index/27d9747a-db48-4565-8d44-df318fce37ad?diagramType=Topology)
 
 ## Installation
 
@@ -28,6 +28,7 @@ $ source /REST_Connector/bin/activate
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install requests
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install python-dotenv
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install cairosvg
+(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install gtts
 ```
 
 ## Run the code
