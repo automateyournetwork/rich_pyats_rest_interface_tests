@@ -29,6 +29,8 @@ $ source /REST_Connector/bin/activate
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install python-dotenv
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install cairosvg
 (REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install gtts
+(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install openai
+
 ```
 
 ## Run the code
@@ -50,6 +52,12 @@ You can create a local.env file with a WebEx Room ID and WebEx Token and have th
 
 WEBEX_TOKEN=""
 WEBEX_ROOMID=""
+
+
+## ChatGPT
+You can create a local.env file with an OpenAI API Key to get AI powered suggestions to fix failed tests
+
+OPENAI_KEY=""
 
 ## API Coverage / Tests
 

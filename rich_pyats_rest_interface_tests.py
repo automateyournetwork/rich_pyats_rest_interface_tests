@@ -1,5 +1,6 @@
 import os
 import json
+import openai
 import logging
 import cairosvg
 import requests
@@ -16,6 +17,7 @@ load_dotenv()
 
 webexToken = os.getenv("WEBEX_TOKEN")
 webexRoomId = os.getenv("WEBEX_ROOMID")
+openai.api_key = os.getenv("OPENAI_KEY")
 
 # ----------------
 # Get logger for script
@@ -44,9 +46,6 @@ class common_setup(aetest.CommonSetup):
         aetest.loop.mark(Test_Cisco_IOS_XE_Interface_Oper, device_name=testbed.devices)
         aetest.loop.mark(Test_IETF_Interface, device_name=testbed.devices)
 
-# ----------------
-# Test Case #1
-# ----------------
 class Test_OpenConfig_Interface(aetest.Testcase):
     """Parse the OpenConfig YANG Model - interfaces:interfaces"""
 
@@ -90,7 +89,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                         self.interface_name = self.intf['name']
                         self.error_counter = self.failed_interfaces[self.intf['name']]
                         if webexToken:
-                            self.send_input_crc_mp3(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter)
+                            self.send_input_crc_mp3(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter)                           
                     else:
                         table.add_row(self.device.alias,self.intf['name'],str(in_crc_errors_threshold),counter,'Passed',style="green")
                 else:
@@ -120,6 +119,10 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       'Content-Type': m.content_type})
 
                 print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+            
+            if openai.api_key:
+                self.input_crc_chatgpt()                
+            
             self.failed('Some interfaces have input CRC errors')
         else:
             self.passed('No interfaces have input CRC errors')
@@ -129,7 +132,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input CRC errors with { counter } CRC errors"
         mp3 = gTTS(text = mp3_output, lang=language)
         #Save MP3
-        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Discards.mp3')
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input CRC Errors.mp3')
         m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                   'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input CRC Errors',
                   'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input CRC Errors.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input CRC Errors.mp3", 'rb'),
@@ -140,6 +143,36 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def input_crc_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Input CRC Error?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface CRC Error - here was there response:")
+        log.info((result))
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input CRC Error?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input CRC Error - here was there response:")
+        log.info(result)
 
     @aetest.test
     def test_interface_input_fragment_errors(self):
@@ -191,7 +224,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+            if openai.api_key:
+                self.input_fragment_frames_chatgpt()
+
             self.failed('Some interfaces have input fragment frames')
         else:
             self.passed('No interfaces have input fragment frames')
@@ -212,6 +249,36 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def input_fragment_frames_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Input Fragment Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface Fragment Frame - here was there response:")
+        log.info((result))
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input Fragment Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input Fragment Frame - here was there response:")
+        log.info(result)
 
     @aetest.test
     def test_interface_input_jabber_errors(self):
@@ -263,7 +330,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+            
+            if openai.api_key:
+                self.input_jabber_frames_chatgpt()
+
             self.failed('Some interfaces have input jabber frames')
         else:
             self.passed('No interfaces have input jabber frames')
@@ -273,10 +344,10 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         mp3_output = f"The Device { alias } on Interface { intf } has crossed the threshold of { threshold } for input jabber frames with { counter } jabber frames"
         mp3 = gTTS(text = mp3_output, lang=language)
         #Save MP3
-        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Output Jabber Frames.mp3')
+        mp3.save(f'MP3/{ alias } { intf } Open Config Interface Input Jabber Frames.mp3')
         m = MultipartEncoder({'roomId': f'{ webexRoomId }',
-                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Output Jabber Frames',
-                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Output Jabber Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Output Jabber Frames.mp3", 'rb'),
+                  'text': f'The device { self.device.alias } Interface { intf } Has { counter } Input Jabber Frames',
+                  'files': (f"MP3/{ self.device.alias } { intf } Open Config Interface Input Jabber Frames.mp3", open(f"MP3/{ self.device.alias } { intf } Open Config Interface Input Jabber Frames.mp3", 'rb'),
                   'audio/mp3')})
 
         webex_file_response = requests.post('https://webexapis.com/v1/messages', data=m,
@@ -284,6 +355,36 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def input_jabber_frames_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Jabber Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Jabber Frame - here was there response:")
+        log.info((result))
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Jabber on a network?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input Jabber Frame - here was there response:")
+        log.info(result)
 
     @aetest.test
     def test_interface_input_mac_pause_frames(self):
@@ -300,7 +401,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'openconfig-if-ethernet:ethernet' in self.intf:
                 counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-mac-pause-frames']
                 if counter:
-                    if int(counter) > in_mac_pause_errors_threshold:
+                    if int(counter) == in_mac_pause_errors_threshold:
                         table.add_row(self.device.alias,self.intf['name'],str(in_mac_pause_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[self.intf['name']] = int(counter)
                         self.interface_name = self.intf['name']
@@ -335,7 +436,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+            if openai.api_key:
+                self.input_mac_pause_frames_chatgpt()
+
             self.failed('Some interfaces have input MAC Pause frames')
         else:
             self.passed('No interfaces have input MAC Pause frames')
@@ -357,6 +462,36 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
 
+    def input_mac_pause_frames_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Input MAC Pause Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface Input MAC Pause Frame - here was there response:")
+        log.info((result))
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input MAC Pause on a network?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input MAC Pause Frame - here was there response:")
+        log.info(result)
+
     @aetest.test
     def test_interface_input_oversize_frames_errors(self):
         # Test for input discards
@@ -372,7 +507,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'openconfig-if-ethernet:ethernet' in self.intf:
                 counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-oversize-frames']
                 if counter:
-                    if int(counter) > in_oversize_frames_threshold:
+                    if int(counter) == in_oversize_frames_threshold:
                         table.add_row(self.device.alias,self.intf['name'],str(in_oversize_frames_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[self.intf['name']] = int(counter)
                         self.interface_name = self.intf['name']
