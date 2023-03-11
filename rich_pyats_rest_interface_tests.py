@@ -157,7 +157,22 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         for choice in response.choices:
             result += choice.message.content
         log.info("We asked chatGPT what is a Cisco Interface CRC Error - here was there response:")
-        log.info((result))
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input CRC Error?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input CRC Error - here was there response:")
+        log.info(result)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -269,6 +284,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input Fragment Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input Fragment Frame - here was there response:")
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Fragment Frame?"},
                 ]
         )
@@ -375,7 +405,30 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "How do we fix a Jabber on a network?"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input Jabber Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input Jabber Frame - here was there response:")
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input Jabber Frame?"},
+                ]
+        )
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Interface Input Jabber Frame on a network?"},
                 ]
         )
 
@@ -401,7 +454,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'openconfig-if-ethernet:ethernet' in self.intf:
                 counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-mac-pause-frames']
                 if counter:
-                    if int(counter) == in_mac_pause_errors_threshold:
+                    if int(counter) > in_mac_pause_errors_threshold:
                         table.add_row(self.device.alias,self.intf['name'],str(in_mac_pause_errors_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[self.intf['name']] = int(counter)
                         self.interface_name = self.intf['name']
@@ -481,6 +534,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input MAC Pause Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input MAC Pause Frame - here was there response:")
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input MAC Pause on a network?"},
                 ]
         )
@@ -507,7 +575,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'openconfig-if-ethernet:ethernet' in self.intf:
                 counter = self.intf['openconfig-if-ethernet:ethernet']['state']['counters']['in-oversize-frames']
                 if counter:
-                    if int(counter) == in_oversize_frames_threshold:
+                    if int(counter) > in_oversize_frames_threshold:
                         table.add_row(self.device.alias,self.intf['name'],str(in_oversize_frames_threshold),counter,'Failed',style="red")
                         self.failed_interfaces[self.intf['name']] = int(counter)
                         self.interface_name = self.intf['name']
@@ -685,7 +753,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+            if openai.api_key:
+                self.input_discards_chatgpt()
+
             self.failed('Some interfaces have input discards')
         else:
             self.passed('No interfaces have input discards')
@@ -706,6 +778,51 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def input_discards_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Input Discard?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface Input Discard - here was there response:")
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input Discards?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input Discards - here was there response:")
+        log.info(result)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input Discard?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input Discard - here was there response:")
+        log.info(result)
 
     @aetest.test
     def test_interface_input_errors(self):
