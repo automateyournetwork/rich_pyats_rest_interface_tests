@@ -148,7 +148,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input CRC Error?"},
                 ]
         )
@@ -176,7 +176,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input CRC Error?"},
                 ]
         )
@@ -205,7 +205,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input CRC Error?"},
                 ]
         )
@@ -311,7 +311,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input Fragment Frame?"},
                 ]
         )
@@ -339,7 +339,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input Fragment Frame?"},
                 ]
         )
@@ -368,7 +368,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Fragment Frame?"},
                 ]
         )
@@ -474,7 +474,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a network interface jabber traffic?"},
                 ]
         )
@@ -502,7 +502,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to network interface jabber?"},
                 ]
         )
@@ -531,7 +531,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix network interface jabber?"},
                 ]
         )
@@ -539,7 +539,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a network interface jabber on a network?"},
                 ]
         )
@@ -645,7 +645,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input MAC Pause Frame?"},
                 ]
         )
@@ -673,7 +673,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input MAC Pause Frame?"},
                 ]
         )
@@ -702,7 +702,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input MAC Pause Frames on a network?"},
                 ]
         )
@@ -808,7 +808,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input Oversize Frame?"},
                 ]
         )
@@ -836,7 +836,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input Oversize Frame?"},
                 ]
         )
@@ -865,7 +865,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Oversize Frames on a network?"},
                 ]
         )
@@ -971,7 +971,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Output MAC Pause Frame?"},
                 ]
         )
@@ -999,7 +999,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Output MAC Pause Frame?"},
                 ]
         )
@@ -1028,7 +1028,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Output MAC Pause Frames on a network?"},
                 ]
         )
@@ -1133,7 +1133,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input Discard?"},
                 ]
         )
@@ -1161,7 +1161,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input Discards?"},
                 ]
         )
@@ -1190,7 +1190,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Discard?"},
                 ]
         )
@@ -1295,7 +1295,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input Error?"},
                 ]
         )
@@ -1323,7 +1323,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input Errors?"},
                 ]
         )
@@ -1352,7 +1352,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Error?"},
                 ]
         )
@@ -1457,7 +1457,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input FCS Error?"},
                 ]
         )
@@ -1485,7 +1485,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input FCS Errors?"},
                 ]
         )
@@ -1514,7 +1514,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input FCS Error?"},
                 ]
         )
@@ -1619,7 +1619,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Input Unknown Protocol?"},
                 ]
         )
@@ -1647,7 +1647,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Input Unknown Protocols?"},
                 ]
         )
@@ -1676,7 +1676,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Input Unknown Protocol?"},
                 ]
         )
@@ -1781,7 +1781,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Output Discard?"},
                 ]
         )
@@ -1809,7 +1809,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Output Discards?"},
                 ]
         )
@@ -1838,7 +1838,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Output Discards?"},
                 ]
         )
@@ -1943,7 +1943,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Interface Output Error?"},
                 ]
         )
@@ -1971,7 +1971,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to Output Errors?"},
                 ]
         )
@@ -2000,7 +2000,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a Cisco Interface Output Errors?"},
                 ]
         )
@@ -2103,7 +2103,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is Full Duplex on an Interface?"},
                 ]
         )
@@ -2131,7 +2131,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to duplex?"},
                 ]
         )
@@ -2160,7 +2160,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a half duplex interface?"},
                 ]
         )
@@ -2200,7 +2200,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'admin-status' in self.intf['state']:            
                 admin_status = self.intf['state']['admin-status']
                 oper_status = self.intf['state']['oper-status']
-                if oper_status != admin_status:
+                if oper_status == admin_status:
                     table.add_row(self.device.alias,self.intf['name'],admin_status,oper_status,'Failed',style="red")
                     self.failed_interfaces[self.intf['name']] = oper_status
                     self.interface_name = self.intf['name']
@@ -2262,7 +2262,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is Admin Status and Oper Status on an Interface?"},
                 ]
         )
@@ -2290,7 +2290,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to admin and oper status?"},
                 ]
         )
@@ -2319,7 +2319,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we fix a mismatched admin and oper status on an interface?"},
                 ]
         )
@@ -2357,7 +2357,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         for self.intf in self.parsed_json['openconfig-interfaces:interfaces']['interface']:
             if 'description' in self.intf['config']:
                 actual_desc = self.intf['config']['description']
-                if not actual_desc:
+                if actual_desc:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Passed',style="green")
                 else:
                     table.add_row(self.device.alias,self.intf['name'],actual_desc,'Failed',style="red")
@@ -2423,7 +2423,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What is a Cisco Network Interface Description?"},
                 ]
         )
@@ -2451,7 +2451,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "What Cisco show commands are related to interface description?"},
                 ]
         )
@@ -2480,7 +2480,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "system", "content": "You are a CCIE"},
                     {"role": "user", "content": "How do we add a description to a Cisco network interface?"},
                 ]
         )
