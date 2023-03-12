@@ -1,5 +1,5 @@
-# rich_pyats_rest_interface_tests
-Examples of pyATS REST Connector with IOS-XE / NXOS YANG Model Interface level testing
+# braniac
+Examples of pyATS REST Connector with IOS-XE YANG Model Interface level testing using pyATS with chatGPT, Rich, and WebEx Integrations
 
 ## Ready to go with the Cisco CML
 
@@ -16,27 +16,27 @@ $ source /REST_Connector/bin/activate
 
 ### Clone the repository 
 ```console
-(REST_Connector) $ git clone https://github.com/automateyournetwork/rich_pyats_rest_interface_tests
-(REST_Connector) $ cd rich_pyats_rest_interface_tests
+(REST_Connector) $ git clone https://github.com/automateyournetwork/braniac
+(REST_Connector) $ cd braniac
 ```
 
 ### Install the required packages
 ```console
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install pyats[full]
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install rich
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install rest.connector
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install requests
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install python-dotenv
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install cairosvg
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install gtts
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pip install openai
+(REST_Connector) ~/braniac$ pip install pyats[full]
+(REST_Connector) ~/braniac$ pip install rich
+(REST_Connector) ~/braniac$ pip install rest.connector
+(REST_Connector) ~/braniac$ pip install requests
+(REST_Connector) ~/braniac$ pip install python-dotenv
+(REST_Connector) ~/braniac$ pip install cairosvg
+(REST_Connector) ~/braniac$ pip install gtts
+(REST_Connector) ~/braniac$ pip install openai
 
 ```
 
 ## Run the code
 ```console
-(REST_Connector) ~/rich_pyats_rest_interface_tests$
-(REST_Connector) ~/rich_pyats_rest_interface_tests$ pyats run job rich_pyats_rest_interface_tests_job.py
+(REST_Connector) ~/braniac$
+(REST_Connector) ~/braniac$ pyats run job braniac_job.py
 ```
 
 ### View the logs
