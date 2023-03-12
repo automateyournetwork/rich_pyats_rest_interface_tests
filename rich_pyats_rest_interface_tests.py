@@ -159,6 +159,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT what is a Cisco Interface CRC Error - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)        
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -173,6 +187,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         
         log.info("We asked chatGPT What Cisco show commands are related to Input CRC Error - here was there response:")
         log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload) 
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -189,8 +217,22 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT how to fix a Cisco Interface Input CRC Error - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
     @aetest.test
-    def test_interface_input_fragment_errors(self):
+    def test_interface_input_fragment_frames(self):
         # Test for input discards
         in_fragment_errors_threshold = 0
         self.failed_interfaces = {}
@@ -280,6 +322,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT what is a Cisco Interface Fragment Frame - here was there response:")
         log.info((result))
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -294,6 +350,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         
         log.info("We asked chatGPT What Cisco show commands are related to Input Fragment Frame - here was there response:")
         log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -310,8 +380,22 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT how to fix a Cisco Interface Input Fragment Frame - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
     @aetest.test
-    def test_interface_input_jabber_errors(self):
+    def test_interface_input_jabber_frames(self):
         # Test for input discards
         in_jabber_errors_threshold = 0
         self.failed_interfaces = {}
@@ -391,21 +475,35 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "What is a Jabber Frame?"},
+                    {"role": "user", "content": "What is a network interface jabber traffic?"},
                 ]
         )
 
         result = ''
         for choice in response.choices:
             result += choice.message.content
-        log.info("We asked chatGPT what is a Jabber Frame - here was there response:")
-        log.info((result))
+        log.info("We asked chatGPT what is network interface jabber - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "What Cisco show commands are related to Input Jabber Frame?"},
+                    {"role": "user", "content": "What Cisco show commands are related to network interface jabber?"},
                 ]
         )
 
@@ -413,14 +511,28 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         for choice in response.choices:
             result += choice.message.content
         
-        log.info("We asked chatGPT What Cisco show commands are related to Input Jabber Frame - here was there response:")
+        log.info("We asked chatGPT What Cisco show commands are related to network interface jabber - here was there response:")
         log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "How do we fix a Cisco Interface Input Jabber Frame?"},
+                    {"role": "user", "content": "How do we fix network interface jabber?"},
                 ]
         )
 
@@ -428,7 +540,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "How do we fix a Interface Input Jabber Frame on a network?"},
+                    {"role": "user", "content": "How do we fix a network interface jabber on a network?"},
                 ]
         )
 
@@ -436,8 +548,22 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         for choice in response.choices:
             result += choice.message.content
         
-        log.info("We asked chatGPT how to fix a Cisco Interface Input Jabber Frame - here was there response:")
+        log.info("We asked chatGPT how to fix a network interface jabbar - here was there response:")
         log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
     @aetest.test
     def test_interface_input_mac_pause_frames(self):
@@ -528,7 +654,21 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         for choice in response.choices:
             result += choice.message.content
         log.info("We asked chatGPT what is a Cisco Interface Input MAC Pause Frame - here was there response:")
-        log.info((result))
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -545,11 +685,25 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT What Cisco show commands are related to Input MAC Pause Frame - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                     {"role": "system", "content": "You are a chatbot"},
-                    {"role": "user", "content": "How do we fix a Cisco Interface Input MAC Pause on a network?"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input MAC Pause Frames on a network?"},
                 ]
         )
 
@@ -560,8 +714,22 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT how to fix a Cisco Interface Input MAC Pause Frame - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
     @aetest.test
-    def test_interface_input_oversize_frames_errors(self):
+    def test_interface_input_oversize_frames(self):
         # Test for input discards
         in_oversize_frames_threshold = 0
         self.failed_interfaces = {}
@@ -610,7 +778,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+            if openai.api_key:
+                self.input_oversize_chatgpt()
+
             self.failed('Some interfaces have input oversize frames')
         else:
             self.passed('No interfaces have input oversize frames')
@@ -631,6 +803,93 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def input_oversize_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Input Oversize Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface Input Oversize Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Input Oversize Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Input Oversize Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Input Oversize Frames on a network?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Input Oversize Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
     @aetest.test
     def test_interface_output_pause_frames(self):
@@ -682,7 +941,11 @@ class Test_OpenConfig_Interface(aetest.Testcase):
                       headers={'Authorization': f'Bearer { webexToken }',
                       'Content-Type': m.content_type})
 
-                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)            
+                print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+            if openai.api_key:
+                self.ouput_mac_pause_chatgpt()
+
             self.failed('Some interfaces have output MAC pause frames')
         else:
             self.passed('No interfaces have output MAC pause frames')
@@ -703,6 +966,93 @@ class Test_OpenConfig_Interface(aetest.Testcase):
               'Content-Type': m.content_type})
         
         print(f'The POST to WebEx had a response code of ' + str(webex_file_response.status_code) + 'due to' + webex_file_response.reason)
+
+    def ouput_mac_pause_chatgpt(self):
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What is a Cisco Interface Output MAC Pause Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        log.info("We asked chatGPT what is a Cisco Interface Output MAC Pause Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "What Cisco show commands are related to Output MAC Pause Frame?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT What Cisco show commands are related to Output MAC Pause Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                    {"role": "system", "content": "You are a chatbot"},
+                    {"role": "user", "content": "How do we fix a Cisco Interface Output MAC Pause Frames on a network?"},
+                ]
+        )
+
+        result = ''
+        for choice in response.choices:
+            result += choice.message.content
+        
+        log.info("We asked chatGPT how to fix a Cisco Interface Output MAC Pause Frame - here was there response:")
+        log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
     @aetest.test
     def test_interface_input_discards(self):
@@ -794,6 +1144,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT what is a Cisco Interface Input Discard - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -809,6 +1173,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         log.info("We asked chatGPT What Cisco show commands are related to Input Discards - here was there response:")
         log.info(result)
 
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
@@ -823,6 +1201,20 @@ class Test_OpenConfig_Interface(aetest.Testcase):
         
         log.info("We asked chatGPT how to fix a Cisco Interface Input Discard - here was there response:")
         log.info(result)
+
+        if webexToken:
+            url = "https://webexapis.com/v1/messages"
+
+            payload = json.dumps({
+              "roomId": f"{ webexRoomId }",
+              "text": f"{ result }"
+            })
+            headers = {
+              'Authorization': f'Bearer { webexToken }',
+              'Content-Type': 'application/json'
+            }
+
+            response = requests.request("POST", url, headers=headers, data=payload)
 
     @aetest.test
     def test_interface_input_errors(self):
@@ -2088,7 +2480,7 @@ class Test_Cisco_IOS_XE_Interface_Oper(aetest.Testcase):
         mp3_output = f"The Device { alias } Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards"
         mp3 = gTTS(text = mp3_output, lang=language)
         #Save MP3
-        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Input Output Discards.mp3')
+        mp3.save(f'MP3/{ alias } { intf } Cisco IOS XE Interfaces Output Discards.mp3')
         m = MultipartEncoder({'roomId': f'{ webexRoomId }',
                   'text': f'The device { self.device.alias } Interface { intf } has crossed the threshold of { threshold } for output discards with { counter } discards',
                   'files': (f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Discards.mp3", open(f"MP3/{ self.device.alias } { intf } Cisco IOS XE Interfaces Output Discards.mp3", 'rb'),
