@@ -1,4 +1,4 @@
-# braniac
+# brainiac
 Examples of pyATS REST Connector with IOS-XE YANG Model Interface level testing using pyATS with chatGPT, Rich, and WebEx Integrations
 
 ## Ready to go with the Cisco CML
@@ -16,27 +16,27 @@ $ source /REST_Connector/bin/activate
 
 ### Clone the repository 
 ```console
-(REST_Connector) $ git clone https://github.com/automateyournetwork/braniac
-(REST_Connector) $ cd braniac
+(REST_Connector) $ git clone https://github.com/automateyournetwork/brainiac
+(REST_Connector) $ cd brainiac
 ```
 
 ### Install the required packages
 ```console
-(REST_Connector) ~/braniac$ pip install pyats[full]
-(REST_Connector) ~/braniac$ pip install rich
-(REST_Connector) ~/braniac$ pip install rest.connector
-(REST_Connector) ~/braniac$ pip install requests
-(REST_Connector) ~/braniac$ pip install python-dotenv
-(REST_Connector) ~/braniac$ pip install cairosvg
-(REST_Connector) ~/braniac$ pip install gtts
-(REST_Connector) ~/braniac$ pip install openai
+(REST_Connector) ~/brainiac$ pip install pyats[full]
+(REST_Connector) ~/brainiac$ pip install rich
+(REST_Connector) ~/brainiac$ pip install rest.connector
+(REST_Connector) ~/brainiac$ pip install requests
+(REST_Connector) ~/brainiac$ pip install python-dotenv
+(REST_Connector) ~/brainiac$ pip install cairosvg
+(REST_Connector) ~/brainiac$ pip install gtts
+(REST_Connector) ~/brainiac$ pip install openai
 
 ```
 
 ## Run the code
 ```console
-(REST_Connector) ~/braniac$
-(REST_Connector) ~/braniac$ pyats run job braniac_job.py
+(REST_Connector) ~/brainiac$
+(REST_Connector) ~/brainiac$ pyats run job brainiac_job.py
 ```
 
 ### View the logs
