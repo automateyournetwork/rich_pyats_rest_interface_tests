@@ -2200,7 +2200,7 @@ class Test_OpenConfig_Interface(aetest.Testcase):
             if 'admin-status' in self.intf['state']:            
                 admin_status = self.intf['state']['admin-status']
                 oper_status = self.intf['state']['oper-status']
-                if oper_status == admin_status:
+                if oper_status != admin_status:
                     table.add_row(self.device.alias,self.intf['name'],admin_status,oper_status,'Failed',style="red")
                     self.failed_interfaces[self.intf['name']] = oper_status
                     self.interface_name = self.intf['name']

@@ -22,15 +22,7 @@ $ source /REST_Connector/bin/activate
 
 ### Install the required packages
 ```console
-(REST_Connector) ~/brainiac$ pip install pyats[full]
-(REST_Connector) ~/brainiac$ pip install rich
-(REST_Connector) ~/brainiac$ pip install rest.connector
-(REST_Connector) ~/brainiac$ pip install requests
-(REST_Connector) ~/brainiac$ pip install python-dotenv
-(REST_Connector) ~/brainiac$ pip install cairosvg
-(REST_Connector) ~/brainiac$ pip install gtts
-(REST_Connector) ~/brainiac$ pip install openai
-
+(REST_Connector) ~/brainiac$ pip install -r requirements.txt
 ```
 
 ## Run the code
